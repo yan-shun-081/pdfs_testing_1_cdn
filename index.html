@@ -2,27 +2,80 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>CDN Folder Viewer</title>
+  <title>PDF Folder Viewer</title>
   <style>
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
       overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    #container {
+      display: flex;
+      height: 100%;
+    }
+    #list {
+      width: 260px;
+      background: #111;
+      color: white;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    #list div {
+      padding: 8px;
+      cursor: pointer;
+      border-bottom: 1px solid #333;
+    }
+    #list div:hover {
+      background: #222;
     }
     iframe {
-      width: 100%;
-      height: 100%;
+      flex: 1;
       border: none;
     }
   </style>
 </head>
+
 <body>
 
-<iframe 
-  src="https://cdn.jsdelivr.net/gh/yan-shun-081/pdfs_testing_1_cdn@main/pdfs/" 
-  title="PDF Folder">
-</iframe>
+<div id="container">
+  <div id="list">Loading files…</div>
+  <iframe id="viewer"></iframe>
+</div>
+
+<script>
+const apiURL = "https://api.github.com/repos/yan-shun-081/pdfs_testing_1_cdn/contents/pdfs";
+const cdnBase = "https://cdn.jsdelivr.net/gh/yan-shun-081/pdfs_testing_1_cdn@main/pdfs/";
+
+async function loadFiles() {
+  const listEl = document.getElementById("list");
+  listEl.innerHTML = "";
+
+  try {
+    const res = await fetch(apiURL);
+    const data = await res.json();
+
+    data.forEach(file => {
+      if (file.name.endsWith(".pdf")) {
+        const item = document.createElement("div");
+        item.textContent = file.name;
+        item.onclick = () => openPDF(file.name);
+        listEl.appendChild(item);
+      }
+    });
+  } catch (err) {
+    listEl.innerHTML = "Error loading files";
+  }
+}
+
+function openPDF(name) {
+  const url = cdnBase + encodeURIComponent(name);
+  document.getElementById("viewer").src = url;
+}
+
+loadFiles();
+</script>
 
 </body>
 </html>
