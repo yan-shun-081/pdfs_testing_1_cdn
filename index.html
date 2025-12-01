@@ -68,11 +68,11 @@ document.getElementById('load-btn').addEventListener('click', async () => {
     pdfViewer.style.display = "none";
     pdfViewer.src = "";
 
-    // URL to your pdfs.json on jsDelivr CDN
-    const jsonURL = "https://cdn.jsdelivr.net/gh/yan-shun-081/pdfs_testing_1_cdn@main/pdfs/pdfs.json";
+    // Add a timestamp to force CDN and browser to fetch fresh json
+    const jsonURL = "https://cdn.jsdelivr.net/gh/yan-shun-081/pdfs_testing_1_cdn@main/pdfs/pdfs.json?t=" + new Date().getTime();
 
     try {
-        const res = await fetch(jsonURL);
+        const res = await fetch(jsonURL, { cache: "no-store" });
         if (!res.ok) throw new Error("Failed to load PDF list.");
 
         const pdfFiles = await res.json();
